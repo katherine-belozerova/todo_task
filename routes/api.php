@@ -18,10 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/lists/{user_id}', 'ListsController@lists');
-Route::post('/lists/create/{user_id}', 'ListsController@create');
-Route::post('/lists/update/{list_id}', 'ListsController@update');
-Route::put('/lists/done/{list_id}', 'ListsController@done');
-Route::put('/lists/not-done/{list_id}', 'ListsController@notDone');
-Route::post('/lists/delete/{list_id}', 'ListsController@delete');
+Route::get('/catalogs/{id}', 'CatalogController@catalogs');
+Route::get('/catalog/completed/{id}', 'CatalogController@completed');
+Route::get('/catalog/not-completed/{id}', 'CatalogController@notCompleted');
+Route::get('/catalog/searching/{id}/{value}', 'CatalogController@searching');
+Route::post('/catalog/create/{id}', 'CatalogController@create');
+Route::post('/catalog/update/{id}', 'CatalogController@update');
+Route::put('/catalog/done/{id}', 'CatalogController@done');
+Route::put('/catalog/not-done/{id}', 'CatalogController@notDone');
+Route::post('/catalog/delete/{id}', 'CatalogController@delete');
 

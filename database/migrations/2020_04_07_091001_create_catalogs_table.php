@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateListTable extends Migration
+class CreateCatalogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateListTable extends Migration
      */
     public function up()
     {
-        Schema::create('list', function (Blueprint $table) {
-            $table->bigIncrements('list_id');
+        Schema::create('catalogs', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->integer('user_id');
-            $table->string('list_name');
-            $table->boolean('mark_done')->default(false);
+            $table->string('name');
+            $table->boolean('done')->default(false);
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateListTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('list');
+        Schema::dropIfExists('catalog');
     }
 }
