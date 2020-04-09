@@ -2,10 +2,10 @@
 
 namespace App;
 
+use Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use \DB;
-use function GuzzleHttp\describe_type;
 
 class Catalog extends Model
 {
@@ -17,6 +17,14 @@ class Catalog extends Model
         'updated_at',
         'done'
     ];
+
+    public function rules()
+    {
+        return [
+            'name'=>'required|min:16',
+        ];
+
+    }
 
     public function showMyCatalogs($id)
     {
@@ -59,9 +67,14 @@ class Catalog extends Model
         $catalog = new Catalog();
         $catalog->user_id = $id;
         $catalog->name = $request->input('name');
-        $catalog->save();
 
-        return response()->json($catalog);
+        $validator = Validator::make($request->all(), $this->rules());
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        } else $catalog->save();
+
+        return $catalog;
     }
 
     public function updateCatalog(Request $request, $id)
@@ -69,9 +82,13 @@ class Catalog extends Model
         $update = Catalog::find($id);
         $update->name = $request->input('name');
 
-        $update->save();
+        $validator = Validator::make($request->all(), $this->rules());
 
-        return response()->json($update);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        } else $update->save();
+
+        return $update;
     }
 
     public function changeStatus($id, $mark)
@@ -83,9 +100,17 @@ class Catalog extends Model
 
     public function deleteCatalog($id)
     {
-        return DB::table('catalogs')
+        // Удаление задачи по ее id
+        DB::table('catalogs')
             ->where('id', $id)
             ->delete();
+
+        // Удаление всех подзадач в данной задаче
+        DB::table('tasks')
+            ->where('catalog_id', $id)
+            ->delete();
+
+        return 'Задача и все вложенные подзадачи успешно удалены';
     }
 
 
