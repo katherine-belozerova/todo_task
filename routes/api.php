@@ -45,8 +45,6 @@ Route::middleware(['jwt.auth'])->group(function ()
     Route::post('/task/delete/{id}', 'TaskController@delete');
 });
 
-Route::post('/test/{id}', 'TestController@test');
-
 
 
 

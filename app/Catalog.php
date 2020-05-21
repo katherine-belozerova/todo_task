@@ -21,7 +21,7 @@ class Catalog extends Model
     public function rules()
     {
         return [
-            'name'=>'required|min:16',
+            'name'=>'required|min:4',
         ];
 
     }
@@ -91,11 +91,22 @@ class Catalog extends Model
         return $update;
     }
 
+    // Если список отметить выполненным, то все дела внутри него, отметятся, как выполненные
     public function changeStatus($id, $mark)
     {
-        return DB::table('catalogs')
+        if ($mark = true){
+            DB::table('catalogs')
+                ->where('id', $id)
+                ->update(['done' => true]);
+            DB::table('tasks')
+                ->where('catalog_id', $id)
+                ->update(['done' => true]);
+            return Catalog::find($id);
+        } else
+        DB::table('catalogs')
             ->where('id', $id)
-            ->update(['done' => $mark]);
+            ->update(['done' => false]);
+        return Catalog::find($id);
     }
 
     public function deleteCatalog($id)
@@ -110,7 +121,7 @@ class Catalog extends Model
             ->where('catalog_id', $id)
             ->delete();
 
-        return 'Задача и все вложенные подзадачи успешно удалены';
+        return 'Список и все вложенные дела успешно удалены';
     }
 
 

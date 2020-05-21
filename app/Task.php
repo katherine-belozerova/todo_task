@@ -23,7 +23,7 @@ class Task extends Model
     public function rules()
     {
         return [
-            'name' => 'required|min:16',
+            'name' => 'required|min:4',
             'status' => 'required|integer|between:1,5'
         ];
 
@@ -51,7 +51,7 @@ class Task extends Model
         return DB::table('tasks')
             ->select(['id', 'name', 'done', 'status', 'description', 'created_at', 'updated_at'])
             ->where(['catalog_id' => $id])
-            ->where('name', 'ILIKE', "%$value%")
+            ->where('name', 'ILIKE', "%$value%") // нечувствительность к регистру
             ->get();
     }
 
@@ -62,7 +62,6 @@ class Task extends Model
         $task->name = $request->input('name');
         $task->description = $request->input('description');
         $task->status = $request->input('status');
-        $task->done = $request->input('done');
 
         $validator = Validator::make($request->all(), $this->rules());
 
@@ -92,9 +91,10 @@ class Task extends Model
 
     public function changeStatus($id, $mark)
     {
-        return DB::table('tasks')
+        DB::table('tasks')
             ->where('id', $id)
             ->update(['done' => $mark]);
+        return Task::find($id);
     }
 
     public function deleteTask($id)

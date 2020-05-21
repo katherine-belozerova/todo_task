@@ -18,15 +18,14 @@ class User extends Authenticatable implements JWTSubject
         'id',
         'name',
         'username',
-        'password',
-        'token'
+        'password'
     ];
 
     public function rules()
     {
         return [
             'name'=>'required|max:32|alpha',
-            'username'=>'required|max:32|unique:users|min:6',
+            'username'=>'required|max:32|min:6|unique:users',
             'password'=>'required|max:32|min:6|confirmed',
         ];
 
@@ -49,7 +48,6 @@ class User extends Authenticatable implements JWTSubject
         $user->username = $request->input('username');
         $user->name = $request->input('name');
         $user->password = bcrypt($request->input('password'));
-        $user->token = Str::random(32);
 
         $validator = Validator::make($request->all(), $this->rules());
 

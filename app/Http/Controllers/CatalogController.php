@@ -63,19 +63,22 @@ class CatalogController extends Controller
         return $model->updateCatalog($request, $id);
     }
 
-    // Отметка выполненности
+    // Отметить список дел выполненным
     public function done($id)
     {
         $model = new Catalog();
         return $model->changeStatus($id, $mark = true);
+
     }
 
+    // Отметить список дел, как невыполненный
     public function notDone($id)
     {
         $model = new Catalog();
         return $model->changeStatus($id, $mark = false);
     }
 
+    // Удаление всего списка дел вместе с вложенными делами
     public function delete($id)
     {
         $model = new Catalog();
