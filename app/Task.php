@@ -2,10 +2,21 @@
 
 namespace App;
 
-use Validator;
+use Illuminate\Http\JsonResponse;
+use \Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use \DB;
+
+/**
+ * Class Task (дела в списках дел пользователя)
+ *
+ * @package App
+ * @property integer $catalog_id id списка, в котором находится дело
+ * @property string $name название дела, например, "Купить лимоны"
+ * @property string|null $description полное описание дела
+ * @property integer $status статус важности дела (от 1 до 5)
+ */
 
 class Task extends Model
 {
@@ -13,8 +24,6 @@ class Task extends Model
         'name',
         'id',
         'catalog_id',
-        'created_at',
-        'updated_at',
         'done',
         'description',
         'status'
@@ -29,6 +38,13 @@ class Task extends Model
 
     }
 
+    /**
+     * Просмотр всех дел в конкретном списке дел
+     *
+     * @param $id integer id списка, в котором находятся запрашиваемые дела
+     * @return array
+     */
+
     public function showTasks($id)
     {
         return DB::table('tasks')
@@ -36,6 +52,15 @@ class Task extends Model
             ->where('catalog_id', $id)
             ->get();
     }
+
+    /**
+     * Сортировка дел в списке
+     *
+     * @param $id integer id списка, в котором сортируются дела
+     * @param $field string поле БД, по которому производится сортировка
+     * @param $type string тип сортировки (ASC или DESC)
+     * @return array
+     */
 
     public function sortingBy($id, $field, $type)
     {
@@ -46,6 +71,13 @@ class Task extends Model
             ->get();
     }
 
+    /**
+     * Поиск по делам в списке
+     *
+     * @param $id integer id списка, в котором производится поиск по делам
+     * @param $value string непосредственно сам запрос поиска, например, "Купить лимоны"
+     * @return array
+     */
     public function search($id, $value)
     {
         return DB::table('tasks')
@@ -55,6 +87,13 @@ class Task extends Model
             ->get();
     }
 
+    /**
+     * Создание нового дела в списке
+     *
+     * @param Request $request
+     * @param $id integer id списка, в котором производится создание дела
+     * @return Task|JsonResponse
+     */
     public function createNewTask(Request $request, $id)
     {
         $task = new Task();
@@ -71,6 +110,14 @@ class Task extends Model
 
         return $task;
     }
+
+    /**
+     * Редактирование дела
+     *
+     * @param Request $request
+     * @param $id integer id дела, которое необходимо изменить
+     * @return Task|JsonResponse
+     */
 
     public function updateTask(Request $request, $id)
     {
@@ -89,6 +136,14 @@ class Task extends Model
         return $update;
     }
 
+    /**
+     * Изменения статуса выполненности дела
+     *
+     * @param $id integer id дела, отметку выполненности которого необходимо изменить
+     * @param $mark boolean параметр принимает значения (false или true) для того,
+     * чтобы отметить дело выполненным или наоборот снять отметку выполненности
+     * @return array
+     */
     public function changeStatus($id, $mark)
     {
         DB::table('tasks')
@@ -96,6 +151,13 @@ class Task extends Model
             ->update(['done' => $mark]);
         return Task::find($id);
     }
+
+    /**
+     * Удаление дела из списка дел
+     *
+     * @param $id integer id дела, которое необходимо удалить
+     * @return mixed
+     */
 
     public function deleteTask($id)
     {

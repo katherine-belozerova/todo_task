@@ -3,12 +3,22 @@
 
 namespace App;
 
-use Validator;
+use Illuminate\Http\JsonResponse;
+use \Validator;
 use Illuminate\Http\Request;
 use \Str;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
+/**
+ * Class User - подель пользователей, реализующая интерфейс JWTSubject (авторизация по JsonWebToken)
+ *
+ * @package App
+ * @property string $username логин пользователя
+ * @property string $name имя пользователя
+ * @property string $password пароль пользователя
+ */
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -24,7 +34,7 @@ class User extends Authenticatable implements JWTSubject
     public function rules()
     {
         return [
-            'name'=>'required|max:32|alpha',
+            'name'=>'required|max:32|min:2|alpha',
             'username'=>'required|max:32|min:6|unique:users',
             'password'=>'required|max:32|min:6|confirmed',
         ];
@@ -36,10 +46,22 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    /**
+     * Абстрактный метод интерфейса
+     *
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
         return [];
     }
+
+    /**
+     * Регистрация пользователя
+     *
+     * @param Request $request
+     * @return User|JsonResponse
+     */
 
     public function registerUser(Request $request)
     {
